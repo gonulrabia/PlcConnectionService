@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+	  <OutputType>Exe</OutputType>
+	  <UseWindowsService>true</UseWindowsService>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-PlcConnectionService-82a7f80d-60ea-4c16-aa16-d8b286c0f26f</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <COMReference Include="ActUtlType64Lib">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>5</VersionMajor>
+      <Guid>719a5fab-eb1c-4b52-98bc-f8c9f6912d04</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.5" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+  </ItemGroup>
+</Project>
