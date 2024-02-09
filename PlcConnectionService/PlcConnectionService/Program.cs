@@ -1,11 +1,19 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using PlcConnectionService;
+using PlcConnectionService.DATA;
 
+var builder = Host.CreateDefaultBuilder(args);
 
-IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices(services =>
-    {
-        services.AddHostedService<Worker>();
-    })
-    .Build();
+builder.ConfigureServices((hostContext, services) =>
+{
+    // DbContext'i ekleyin
+    services.AddDbContext<BaseDbContext>(options =>
+        options.UseSqlServer(hostContext.Configuration.GetConnectionString("BaseDbConnection")));
 
-await host.RunAsync();
+    // Worker servisini ekleyin
+    services.AddHostedService<Worker>();
+});
+
+await builder.RunConsoleAsync();

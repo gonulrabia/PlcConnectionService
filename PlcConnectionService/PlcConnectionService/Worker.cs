@@ -1,62 +1,126 @@
 using ActUtlType64Lib;
 using Microsoft.Data.SqlClient;
 using System.Diagnostics;
+using ActSupportMsg64Lib;
+using System.Net;
+using System.Net.Sockets;
+using System.Net.NetworkInformation;
+using System.Threading;
+using Microsoft.Extensions.Configuration;
+using System.IO.Ports;
+using PlcConnectionService.DAL.Modules;
+using PlcConnectionService.Entities.Entities;
+using PlcConnectionService.DATA;
+
 
 namespace PlcConnectionService
 {
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
+        private readonly IConfiguration _configuration;
+        private readonly BaseDbContext _dbContext;
+
         public bool IsConnected = false;
         public bool IsReadWrite = false;
         public readonly ActUtlType64 plc = new ActUtlType64();
+        public readonly ActSupportMsg64 sup = new ActSupportMsg64();
 
+        public int port;
 
-        public Worker(ILogger<Worker> logger, IHostApplicationLifetime appLifetime, IHost host)
+        public SerialPort spCOM3 = new SerialPort("COM3");
+        public SerialPort spCOM4 = new SerialPort("COM4");
+        public Worker(ILogger<Worker> logger, IConfiguration configuration)
         {
             _logger = logger;
+            _configuration = configuration;
             ActUtlType64 plc = new ActUtlType64();
+            ActSupportMsg64 sup = new ActSupportMsg64();
+
         }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             try
             {
+              /*  spCOM3 ??= new SerialPort("COM3"); //spCOM3 null ise yeniden new()leyerek oluþturur
+                if (!spCOM3.IsOpen)
+                {
+                    RefreshComport();
+                }
+                spCOM4 ??= new SerialPort("COM4"); //spCOM4 null ise yeniden new()leyerek oluþturur
+                if (!spCOM4.IsOpen)
+                {
+                    RefreshComport();
+                }*/
+
                 while (!stoppingToken.IsCancellationRequested)
-                {                 
+                {
+                    if (!IsConnected)
+                    {
+                        IsConnected = OpenConnection();
+                    }
                     if (IsConnected)
                     {
                         DataReadWriteFromPlc();
                     }
-                    if (!IsConnected)
-                    {
-                        IsConnected = OpenConnection();
-                    }                
                     await Task.Delay(2000, stoppingToken);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(DateTime.Now + " ==> PLC ile baÄŸlantÄ± kurulamadÄ±. Hata Kodu: " + ex.Message);
+                Console.WriteLine(DateTime.Now + " ==> ExecuteAsync(). Hata: " + ex.Message);
             }
         }
 
         public short raporSil, silCounter, raporVar, raporAdet, counter, batchNo, tN, adimNo, siloNo;
         public int receteID, partiID, hammaddeID, alinacak, alinan, shut;
-        private bool OpenConnection()
-        {
-            plc.ActLogicalStationNumber = 1;
-            int result = plc.Open(); //baÄŸlantÄ± baÅŸarÄ±lÄ± ise 0 dÃ¶ner.
 
+        /*public void RefreshComport()
+        {
             try
             {
+                spCOM3.Close();
+                spCOM3.Dispose();
+                spCOM4.Close();
+                spCOM4.Dispose();
+
+                spCOM3 ??= new SerialPort("COM3"); //spCOM3 null ise yeniden new leyerek oluþturur
+                if (!spCOM3.IsOpen)
+                {
+                    spCOM3.Open();
+                }
+                spCOM4 ??= new SerialPort("COM4"); //spCOM4 null ise yeniden new leyerek oluþturur
+                if (!spCOM4.IsOpen)
+                {
+                    spCOM4.Open();
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + " ==> RefreshComport(). Hata: " + ex.Message);
+            }
+        }*/
+
+        private bool OpenConnection()
+        {
+            try
+            {
+                plc.ActLogicalStationNumber = 1;
+                int result = plc.Open(); //baðlantý baþarýlý ise 0 döner.
+                int errorCode = result;
+                string errorMessage;
+                sup.GetErrorMessage(result, out errorMessage);
+
                 if (result == 0)
                 {
-                    Console.WriteLine(DateTime.Now + " ==> PLC ile baÄŸlantÄ± kuruldu.");
+                    Console.WriteLine(DateTime.Now + " ==> PLC ile baðlantý kuruldu.");                    
                     return true;
                 }
                 else
                 {
-                    Console.WriteLine(DateTime.Now + " ==> PLC ile baÄŸlantÄ± kurulamadÄ±. Hata Kodu: " + result);
+                    Console.WriteLine(DateTime.Now + " ==> PLC ile baðlantý kurulamadý.");
+                    Console.WriteLine(DateTime.Now + $"Hata Kodu: {errorCode}, Hata Ýletisi: {errorMessage}");
                     plc.Close();
                     return false;
                 }
@@ -71,7 +135,6 @@ namespace PlcConnectionService
         {
             try
             {
-                //int plcPortNumber = 1200; 
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
                 plc.GetDevice2("D1002", out raporVar);
@@ -79,10 +142,13 @@ namespace PlcConnectionService
                 if (raporVar == 0)
                 {
                     double timeOutSeconds = stopwatch.Elapsed.TotalSeconds;
-                    if(timeOutSeconds >= 4)
-                    {                       
-                        Console.WriteLine(DateTime.Now + " ==> BaÄŸlantÄ± Koptu.");
+                    if (timeOutSeconds >= 4)
+                    {
+                        Console.WriteLine(DateTime.Now + " ==> Baðlantý Koptu.");
                         plc.Close();
+
+                        //RefreshComport();
+                        
                         IsConnected = false;
                     }
                     else
@@ -91,7 +157,7 @@ namespace PlcConnectionService
                     }
                 }
 
-                // Okunan deÄŸerleri ilgili deÄŸiÅŸkenlere ata
+                // Okunan deðerleri ilgili deðiþkenlere ata
                 short[] deviceValues = new short[9];
                 plc.ReadDeviceBlock2("D1000", 9, out deviceValues[0]);
                 raporSil = deviceValues[0];
@@ -110,36 +176,36 @@ namespace PlcConnectionService
                 plc.ReadDeviceBlock("D1015", 2, out alinacak);
                 plc.ReadDeviceBlock("D1017", 2, out alinan);
                 plc.ReadDeviceBlock("D1019", 2, out shut);
-         
+
                 SaveToSql();
 
-                // Veriyi PLC'ye gÃ¶nderme
+                // Veriyi PLC'ye gönderme
                 short dataToSend = 1;
-                var result = plc.WriteDeviceBlock2("D1000", 1, ref dataToSend); // D1000 adresine 1 deÄŸerini yazma
-                var result2 = plc.WriteDeviceBlock2("D1001", 1, ref counter); // D1001 adresine counter deÄŸerini yazma
+                var result = plc.WriteDeviceBlock2("D1000", 1, ref dataToSend); // D1000 adresine 1 deðerini yazma
+                var result2 = plc.WriteDeviceBlock2("D1001", 1, ref counter); // D1001 adresine counter deðerini yazma
                 if (result == 0)
                 {
-                    Console.WriteLine(DateTime.Now + " ==> Veri baÅŸarÄ±yla PLC'ye gÃ¶nderildi.");
+                    Console.WriteLine(DateTime.Now + " ==> Veri baþarýyla PLC'ye gönderildi.");
                 }
                 else
                 {
-                    Console.WriteLine(DateTime.Now + " ==> Veri yazma hatasÄ±. Hata Kodu: " + result);
+                    Console.WriteLine(DateTime.Now + " ==> Veri yazma hatasý. Hata Kodu: " + result);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(DateTime.Now + " ==> PLC baÄŸlantÄ±sÄ± saÄŸlanamadÄ±. Hata:" + ex.Message);
+                _logger.LogError(DateTime.Now + " ==> PLC baðlantýsý saðlanamadý. Hata:" + ex.Message);
             }
         }
 
-        private void SaveToSql()
+       /* private void SaveToSql()
         {
-            string connectionString = "Server=DESKTOP-5G86BK6; Database=PlcConnection;User Id=sa;Password=sa;Encrypt=true; TrustServerCertificate=true;"; // SQL Server baÄŸlantÄ± dizesi
-            string tableName = "PlcConnectionTable"; // Kaydedilecek SQL tablosu adÄ±
+            string connectionString = "Server=DESKTOP-5G86BK6; Database=PlcConnection;User Id=sa;Password=sa;Encrypt=true; TrustServerCertificate=true;"; // SQL Server baðlantý dizesi
+            string tableName = "PlcConnectionTable"; // Kaydedilecek SQL tablosu adý
 
             try
             {
-                //burda baÄŸlantÄ± aÃ§Ä±lÄ±yo
+                //burda baðlantý açýlýyo
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
@@ -148,9 +214,9 @@ namespace PlcConnectionService
                              "VALUES (@kayitTarihi,@counter,@batchNo, @tN, @adimNo,@siloNo,@receteID, @partiID, @hammaddeID, @alinacak, @alinan, @shut)";
                     using (SqlCommand insertCommand = new SqlCommand(insertQuery, connection))
                     {
-                        // Parametreleri ekleyerek deÄŸerleri atayÄ±n
+                        // Parametreleri ekleyerek deðerleri atayýn
 
-                        insertCommand.Parameters.AddWithValue("@kayitTarihi", DateTime.Now); // Åžu anki tarih
+                        insertCommand.Parameters.AddWithValue("@kayitTarihi", DateTime.Now); // Þu anki tarih
                         insertCommand.Parameters.AddWithValue("@counter", Convert.ToInt32(counter));
                         insertCommand.Parameters.AddWithValue("@batchNo", Convert.ToInt32(batchNo));
                         insertCommand.Parameters.AddWithValue("@tN", Convert.ToInt32(tN));
@@ -163,19 +229,60 @@ namespace PlcConnectionService
                         insertCommand.Parameters.AddWithValue("@alinan", alinan);
                         insertCommand.Parameters.AddWithValue("@shut", shut);
 
-                        // SQL komutunu Ã§alÄ±ÅŸtÄ±r
+                        // SQL komutunu çalýþtýr
                         insertCommand.ExecuteNonQuery();
 
-                        _logger.LogInformation(DateTime.Now + " ==> Veriler SQL'e baÅŸarÄ±yla eklendi.");
+                        _logger.LogInformation(DateTime.Now + " ==> Veriler SQL'e baþarýyla eklendi.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"SQL'e kaydetme iÅŸleminde hata oluÅŸtu. Hata: {ex.Message}");
+                _logger.LogError($"SQL'e kaydetme iþleminde hata oluþtu. Hata: {ex.Message}");
                 if (ex.InnerException != null)
                 {
                     _logger.LogError($"Inner Exception: {ex.InnerException.Message}");
+                }
+            }
+        }*/
+        private void SaveToSql()
+        {
+            try
+            {
+                /*using(BaseDbContext context = new BaseDbContext())
+                {
+
+                }*/
+                
+                PlcDataManagement plcDataMan = new PlcDataManagement();
+
+                PlcData plcData = new PlcData();
+
+                //burada verileri doldur
+                plcData.KayitTarihi = DateTime.Now;
+                plcData.Counter = Convert.ToInt32(counter);
+                plcData.BatchNo = Convert.ToInt32(batchNo);
+                plcData.TN = Convert.ToInt32(tN);
+                plcData.AdimNo = Convert.ToInt32(adimNo);
+                plcData.SiloNo = Convert.ToInt32(siloNo);
+
+                plcData.ReceteID = receteID;
+                plcData.PartiID = partiID;
+                plcData.HammaddeID= hammaddeID;
+                plcData.Alinacak = alinacak;
+                plcData.Alinan = alinan;
+                plcData.Shut = shut;
+
+                var response = plcDataMan.PostPlcData(plcData);
+
+                    _logger.LogInformation(DateTime.Now + " ==> Veriler SQL'e baþarýyla eklendi.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"SQL'e kaydetme iþleminde hata oluþtu. Hata: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError($"Ýç Hata: {ex.InnerException.Message}");
                 }
             }
         }
