@@ -11,6 +11,10 @@ using System.IO.Ports;
 using PlcConnectionService.DAL.Modules;
 using PlcConnectionService.Entities.Entities;
 using PlcConnectionService.DATA;
+using PlcConnectionService.DAL;
+using System;
+using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 
 namespace PlcConnectionService
@@ -19,7 +23,8 @@ namespace PlcConnectionService
     {
         private readonly ILogger<Worker> _logger;
         private readonly IConfiguration _configuration;
-        private readonly BaseDbContext _dbContext;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+
 
         public bool IsConnected = false;
         public bool IsReadWrite = false;
@@ -30,8 +35,9 @@ namespace PlcConnectionService
 
         public SerialPort spCOM3 = new SerialPort("COM3");
         public SerialPort spCOM4 = new SerialPort("COM4");
-        public Worker(ILogger<Worker> logger, IConfiguration configuration)
+        public Worker(ILogger<Worker> logger, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
         {
+            _serviceScopeFactory = serviceScopeFactory;
             _logger = logger;
             _configuration = configuration;
             ActUtlType64 plc = new ActUtlType64();
@@ -43,16 +49,18 @@ namespace PlcConnectionService
         {
             try
             {
-              /*  spCOM3 ??= new SerialPort("COM3"); //spCOM3 null ise yeniden new()leyerek oluþturur
-                if (!spCOM3.IsOpen)
-                {
-                    RefreshComport();
-                }
-                spCOM4 ??= new SerialPort("COM4"); //spCOM4 null ise yeniden new()leyerek oluþturur
-                if (!spCOM4.IsOpen)
-                {
-                    RefreshComport();
-                }*/
+                /*  spCOM3 ??= new SerialPort("COM3"); //spCOM3 null ise yeniden new()leyerek oluþturur
+                  if (!spCOM3.IsOpen)
+                  {
+                      RefreshComport();
+                  }
+                  spCOM4 ??= new SerialPort("COM4"); //spCOM4 null ise yeniden new()leyerek oluþturur
+                  if (!spCOM4.IsOpen)
+                  {
+                      RefreshComport();
+                  }*/
+
+                //SaveToSql();
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
@@ -64,6 +72,7 @@ namespace PlcConnectionService
                     {
                         DataReadWriteFromPlc();
                     }
+                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                     await Task.Delay(2000, stoppingToken);
                 }
             }
@@ -253,36 +262,43 @@ namespace PlcConnectionService
                 {
 
                 }*/
-                
-                PlcDataManagement plcDataMan = new PlcDataManagement();
 
-                PlcData plcData = new PlcData();
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<BaseDbContext>();
+                    // DbContext kullanarak iþlemleri gerçekleþtirin
 
-                //burada verileri doldur
-                plcData.KayitTarihi = DateTime.Now;
-                plcData.Counter = Convert.ToInt32(counter);
-                plcData.BatchNo = Convert.ToInt32(batchNo);
-                plcData.TN = Convert.ToInt32(tN);
-                plcData.AdimNo = Convert.ToInt32(adimNo);
-                plcData.SiloNo = Convert.ToInt32(siloNo);
+                    PlcData plcData = new PlcData();
 
-                plcData.ReceteID = receteID;
-                plcData.PartiID = partiID;
-                plcData.HammaddeID= hammaddeID;
-                plcData.Alinacak = alinacak;
-                plcData.Alinan = alinan;
-                plcData.Shut = shut;
+                    //burada verileri doldurur
+                    plcData.KayitTarihi = DateTime.Now;
+                    plcData.Counter = Convert.ToInt32(counter);
+                    plcData.BatchNo = Convert.ToInt32(batchNo);
+                    plcData.TN = Convert.ToInt32(tN);
+                    plcData.AdimNo = Convert.ToInt32(adimNo);
+                    plcData.SiloNo = Convert.ToInt32(siloNo);
 
-                var response = plcDataMan.PostPlcData(plcData);
+                    plcData.ReceteID = receteID;
+                    plcData.PartiID = partiID;
+                    plcData.HammaddeID = hammaddeID;
+                    plcData.Alinacak = alinacak;
+                    plcData.Alinan = alinan;
+                    plcData.Shut = shut;
+
+                    PlcDataManagement plcDataMan = new PlcDataManagement(dbContext);
+
+                    var response = plcDataMan.PostPlcData(plcData);
+
 
                     _logger.LogInformation(DateTime.Now + " ==> Veriler SQL'e baþarýyla eklendi.");
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"SQL'e kaydetme iþleminde hata oluþtu. Hata: {ex.Message}");
+                _logger.LogInformation($"SQL'e kaydetme iþleminde hata oluþtu. Hata: {ex.Message}");
                 if (ex.InnerException != null)
                 {
-                    _logger.LogError($"Ýç Hata: {ex.InnerException.Message}");
+                    _logger.LogInformation($"Ýç Hata: {ex.InnerException.Message}");
                 }
             }
         }

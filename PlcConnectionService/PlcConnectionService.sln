@@ -5,11 +5,11 @@ VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlcConnectionService", "PlcConnectionService\PlcConnectionService.csproj", "{DD329A27-BB9D-4992-987F-6B4F2F7AFEBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlcConnectionService.DATA", "PlcConnectionService.DATA\PlcConnectionService.DATA.csproj", "{7DBCBD4E-232B-46E1-9C9E-BF1B30933288}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlcConnectionService.DATA", "PlcConnectionService.DATA\PlcConnectionService.DATA.csproj", "{7DBCBD4E-232B-46E1-9C9E-BF1B30933288}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlcConnectionService.Entities", "PlcConnectionService.Entities\PlcConnectionService.Entities.csproj", "{95B60E72-9D58-437A-ADE5-35DE7CE8EEA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlcConnectionService.Entities", "PlcConnectionService.Entities\PlcConnectionService.Entities.csproj", "{95B60E72-9D58-437A-ADE5-35DE7CE8EEA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlcConnectionService.DAL", "PlcConnectionService.DAL\PlcConnectionService.DAL.csproj", "{134CB404-601D-4E65-84AA-9D4EE30EEE78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlcConnectionService.DAL", "PlcConnectionService.DAL\PlcConnectionService.DAL.csproj", "{134CB404-601D-4E65-84AA-9D4EE30EEE78}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -45,10 +45,18 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageReference Include="Serilog" Version="3.1.1" />
     <PackageReference Include="System.IO.Ports" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PlcConnectionService.DAL\PlcConnectionService.DAL.csproj" />
+    <ProjectReference Include="..\PlcConnectionService.DATA\PlcConnectionService.DATA.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="log.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

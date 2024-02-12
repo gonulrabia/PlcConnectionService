@@ -9,16 +9,10 @@ namespace PlcConnectionService.DATA
 {
     public class BaseDbContext : DbContext
     {
-        public BaseDbContext()
-        {
-           
-        }
-
-        public BaseDbContext(DbContextOptions<BaseDbContext> options) : base(options) { }
-        
-
+        public BaseDbContext(DbContextOptions<BaseDbContext> options) : base(options) { }  
 
         public DbSet<PlcData> PlcDatas { get; set; }
 
     }
 }
+
