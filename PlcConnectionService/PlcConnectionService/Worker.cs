@@ -20,7 +20,8 @@ using Serilog;
 namespace PlcConnectionService
 {
     public class Worker : BackgroundService
-    {
+    {      
+
         private readonly ILogger<Worker> _logger;
         private readonly IConfiguration _configuration;
         private readonly IServiceScopeFactory _serviceScopeFactory;
@@ -72,13 +73,13 @@ namespace PlcConnectionService
                     {
                         DataReadWriteFromPlc();
                     }
-                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                    _logger.LogDebug("Worker running at: {time}", DateTimeOffset.Now);
                     await Task.Delay(2000, stoppingToken);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(DateTime.Now + " ==> ExecuteAsync(). Hata: " + ex.Message);
+                _logger.LogDebug(DateTime.Now + " ==> ExecuteAsync(). Hata: " + ex.Message);
             }
         }
 
@@ -129,7 +130,9 @@ namespace PlcConnectionService
                 else
                 {
                     Console.WriteLine(DateTime.Now + " ==> PLC ile baðlantý kurulamadý.");
+                    _logger.LogInformation(DateTime.Now + " ==> PLC ile baðlantý kurulamadý.");
                     Console.WriteLine(DateTime.Now + $"Hata Kodu: {errorCode}, Hata Ýletisi: {errorMessage}");
+                    _logger.LogInformation(DateTime.Now + $"Hata Kodu: {errorCode}, Hata Ýletisi: {errorMessage}");
                     plc.Close();
                     return false;
                 }

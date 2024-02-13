@@ -1,0 +1,47 @@
+2024-02-13 09:54:24.865 +03:00 [INF] Worker running at: "2024-02-13T09:54:24.8544612+03:00"
+2024-02-13 09:54:31.822 +03:00 [INF] Worker running at: "2024-02-13T09:54:31.8228423+03:00"
+2024-02-13 09:59:18.336 +03:00 [INF] Worker running at: "2024-02-13T09:59:18.3268313+03:00"
+2024-02-13 09:59:25.313 +03:00 [INF] Worker running at: "2024-02-13T09:59:25.3132429+03:00"
+2024-02-13 09:59:32.327 +03:00 [INF] Worker running at: "2024-02-13T09:59:32.3273774+03:00"
+2024-02-13 09:59:39.312 +03:00 [INF] Worker running at: "2024-02-13T09:59:39.3122718+03:00"
+2024-02-13 09:59:46.323 +03:00 [INF] Worker running at: "2024-02-13T09:59:46.3230103+03:00"
+2024-02-13 09:59:53.321 +03:00 [INF] Worker running at: "2024-02-13T09:59:53.3215899+03:00"
+2024-02-13 10:03:16.863 +03:00 [INF] 13.02.2024 10:03:16 ==> PLC ile bağlantı kurulamadı.
+2024-02-13 10:03:16.896 +03:00 [INF] 13.02.2024 10:03:16Hata Kodu: 25199627, Hata İletisi: Time-out error
+Though the time-out period had elapsed, data could not be received.
+The corrective action is as follows:
+ Review the time-out value of the property.
+ Set it again on the communication settings utility.
+ Review the system, e.g.  PLC CPU, module setting and cable status.
+ Check if communication can be established with the Ping command.
+ Retry the method.
+ Perform Close once and execute Open again.
+ Exit the program and restart the personal computer.
+ 
+<ErrorCode:180840b[Hex]>
+2024-02-13 10:03:23.818 +03:00 [INF] 13.02.2024 10:03:23 ==> PLC ile bağlantı kurulamadı.
+2024-02-13 10:03:23.823 +03:00 [INF] 13.02.2024 10:03:23Hata Kodu: 25199627, Hata İletisi: Time-out error
+Though the time-out period had elapsed, data could not be received.
+The corrective action is as follows:
+ Review the time-out value of the property.
+ Set it again on the communication settings utility.
+ Review the system, e.g.  PLC CPU, module setting and cable status.
+ Check if communication can be established with the Ping command.
+ Retry the method.
+ Perform Close once and execute Open again.
+ Exit the program and restart the personal computer.
+ 
+<ErrorCode:180840b[Hex]>
+2024-02-13 10:03:30.809 +03:00 [INF] 13.02.2024 10:03:30 ==> PLC ile bağlantı kurulamadı.
+2024-02-13 10:03:30.812 +03:00 [INF] 13.02.2024 10:03:30Hata Kodu: 25199627, Hata İletisi: Time-out error
+Though the time-out period had elapsed, data could not be received.
+The corrective action is as follows:
+ Review the time-out value of the property.
+ Set it again on the communication settings utility.
+ Review the system, e.g.  PLC CPU, module setting and cable status.
+ Check if communication can be established with the Ping command.
+ Retry the method.
+ Perform Close once and execute Open again.
+ Exit the program and restart the personal computer.
+ 
+<ErrorCode:180840b[Hex]>
