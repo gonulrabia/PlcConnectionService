@@ -16,11 +16,11 @@ namespace PlcConnectionService.Entities.Entities
         public int AdimNo { get; set; }
         public int SiloNo { get; set; }
 
-        public int ReceteID { get; set; }
-        public int PartiID { get; set; }
-        public int HammaddeID { get; set; }
-        public int Alinacak { get; set; }
-        public int Alinan { get; set; }
-        public int Shut { get; set; }
+        public long ReceteID { get; set; }
+        public long PartiID { get; set; }
+        public long HammaddeID { get; set; }
+        public long Alinacak { get; set; }
+        public long Alinan { get; set; }
+        public long Shut { get; set; }
     }
 }

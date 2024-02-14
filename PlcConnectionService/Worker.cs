@@ -15,12 +15,13 @@ using PlcConnectionService.DAL;
 using System;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace PlcConnectionService
 {
     public class Worker : BackgroundService
-    {      
+    {
 
         private readonly ILogger<Worker> _logger;
         private readonly IConfiguration _configuration;
@@ -65,7 +66,7 @@ namespace PlcConnectionService
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                   
+
                     if (!IsConnected)
                     {
                         IsConnected = OpenConnection();
@@ -85,7 +86,7 @@ namespace PlcConnectionService
         }
 
         public short raporSil, silCounter, raporVar, raporAdet, counter, batchNo, tN, adimNo, siloNo;
-        public int receteID, partiID, hammaddeID, alinacak, alinan, shut;
+        public int receteID, partiID, hammaddeID, alinacak, alinan, shut, receteID1, partiID1, hammaddeID1, alinacak1, alinan1, shut1;
 
         /*public void RefreshComport()
         {
@@ -129,7 +130,7 @@ namespace PlcConnectionService
                     _logger.LogWarning(DateTime.Now + " ==> PLC ile baðlantý kuruldu.");
                     return true;
                 }
-                
+
                 else
                 {
                     Console.WriteLine(DateTime.Now + " ==> PLC ile baðlantý kurulamadý.");
@@ -164,9 +165,9 @@ namespace PlcConnectionService
                         plc.Close();
 
                         //RefreshComport();
-                        
+
                         IsConnected = false;
-                      
+
                     }
                     else
                     {
@@ -175,43 +176,51 @@ namespace PlcConnectionService
                     }
                     return; //rapor yoksa devam etmez burda metottan çýkar. Böylece boþ veri yazmamýþ olur.
                 }
-                if(raporVar > 0) { 
-                // Okunan deðerleri ilgili deðiþkenlere ata
-                short[] deviceValues = new short[9];
-                plc.ReadDeviceBlock2("D1000", 9, out deviceValues[0]);
-                raporSil = deviceValues[0];
-                silCounter = deviceValues[1];
-                raporVar = deviceValues[2];
-                raporAdet = deviceValues[3];
-                counter = deviceValues[4];
-                batchNo = deviceValues[5];
-                tN = deviceValues[6];
-                adimNo = deviceValues[7];
-                siloNo = deviceValues[8];
-
-                plc.ReadDeviceBlock("D1009", 2, out receteID);
-                plc.ReadDeviceBlock("D1011", 2, out partiID);
-                plc.ReadDeviceBlock("D1013", 2, out hammaddeID);
-                plc.ReadDeviceBlock("D1015", 2, out alinacak);
-                plc.ReadDeviceBlock("D1017", 2, out alinan);
-                plc.ReadDeviceBlock("D1019", 2, out shut);
-
-                SaveToSql();
-
-                // Veriyi PLC'ye gönderme
-                short dataToSend = 1;
-                var result = plc.WriteDeviceBlock2("D1000", 1, ref dataToSend); // D1000 adresine 1 deðerini yazma
-                var result2 = plc.WriteDeviceBlock2("D1001", 1, ref counter); // D1001 adresine counter deðerini yazma
-                if (result == 0)
+                if (raporVar > 0)
                 {
+                    // Okunan deðerleri ilgili deðiþkenlere ata
+                    short[] deviceValues = new short[9];
+                    plc.ReadDeviceBlock2("D1000", 9, out deviceValues[0]);
+                    raporSil = deviceValues[0];
+                    silCounter = deviceValues[1];
+                    raporVar = deviceValues[2];
+                    raporAdet = deviceValues[3];
+                    counter = deviceValues[4];
+                    batchNo = deviceValues[5];
+                    tN = deviceValues[6];
+                    adimNo = deviceValues[7];
+                    siloNo = deviceValues[8];
+
+                    plc.ReadDeviceBlock("D1009", 2, out receteID);
+                    plc.ReadDeviceBlock("D1010", 2, out receteID1);
+                    plc.ReadDeviceBlock("D1011", 2, out partiID);
+                    plc.ReadDeviceBlock("D1012", 2, out partiID1);
+                    plc.ReadDeviceBlock("D1013", 2, out hammaddeID);
+                    plc.ReadDeviceBlock("D1014", 2, out hammaddeID1);
+                    plc.ReadDeviceBlock("D1015", 2, out alinacak);
+                    plc.ReadDeviceBlock("D1016", 2, out alinacak1);
+                    plc.ReadDeviceBlock("D1017", 2, out alinan);
+                    plc.ReadDeviceBlock("D1018", 2, out alinan1);
+                    plc.ReadDeviceBlock("D1019", 2, out shut);
+                    plc.ReadDeviceBlock("D1020", 2, out shut1);
+
+
+                    SaveToSql();
+
+                    // Veriyi PLC'ye gönderme
+                    short dataToSend = 1;
+                    var result = plc.WriteDeviceBlock2("D1000", 1, ref dataToSend); // D1000 adresine 1 deðerini yazma
+                    var result2 = plc.WriteDeviceBlock2("D1001", 1, ref counter); // D1001 adresine counter deðerini yazma
+                    if (result == 0)
+                    {
                         Console.WriteLine(DateTime.Now + " ==> Veri baþarýyla Sql'e  gönderildi.");
                         //_logger.LogDebug(DateTime.Now + " ==> Veri baþarýyla Sql'e  gönderildi.");
+                    }
+                    else
+                    {
+                        _logger.LogError(DateTime.Now + " ==> Veri yazma hatasý. Hata Kodu: " + result);
+                    }
                 }
-                else
-                {
-                    _logger.LogError(DateTime.Now + " ==> Veri yazma hatasý. Hata Kodu: " + result);
-                }
-            }
             }
             catch (Exception ex)
             {
@@ -219,53 +228,53 @@ namespace PlcConnectionService
             }
         }
 
-       /* private void SaveToSql()
-        {
-            string connectionString = "Server=DESKTOP-5G86BK6; Database=PlcConnection;User Id=sa;Password=sa;Encrypt=true; TrustServerCertificate=true;"; // SQL Server baðlantý dizesi
-            string tableName = "PlcConnectionTable"; // Kaydedilecek SQL tablosu adý
+        /* private void SaveToSql()
+         {
+             string connectionString = "Server=DESKTOP-5G86BK6; Database=PlcConnection;User Id=sa;Password=sa;Encrypt=true; TrustServerCertificate=true;"; // SQL Server baðlantý dizesi
+             string tableName = "PlcConnectionTable"; // Kaydedilecek SQL tablosu adý
 
-            try
-            {
-                //burda baðlantý açýlýyo
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                {
-                    connection.Open();
+             try
+             {
+                 //burda baðlantý açýlýyo
+                 using (SqlConnection connection = new SqlConnection(connectionString))
+                 {
+                     connection.Open();
 
-                    string insertQuery = $"INSERT INTO {tableName} (kayitTarihi,counter,batchNo,tN,adimNo,siloNo,receteID,partiID,hammaddeID,alinacak,alinan,shut) " +
-                             "VALUES (@kayitTarihi,@counter,@batchNo, @tN, @adimNo,@siloNo,@receteID, @partiID, @hammaddeID, @alinacak, @alinan, @shut)";
-                    using (SqlCommand insertCommand = new SqlCommand(insertQuery, connection))
-                    {
-                        // Parametreleri ekleyerek deðerleri atayýn
+                     string insertQuery = $"INSERT INTO {tableName} (kayitTarihi,counter,batchNo,tN,adimNo,siloNo,receteID,partiID,hammaddeID,alinacak,alinan,shut) " +
+                              "VALUES (@kayitTarihi,@counter,@batchNo, @tN, @adimNo,@siloNo,@receteID, @partiID, @hammaddeID, @alinacak, @alinan, @shut)";
+                     using (SqlCommand insertCommand = new SqlCommand(insertQuery, connection))
+                     {
+                         // Parametreleri ekleyerek deðerleri atayýn
 
-                        insertCommand.Parameters.AddWithValue("@kayitTarihi", DateTime.Now); // Þu anki tarih
-                        insertCommand.Parameters.AddWithValue("@counter", Convert.ToInt32(counter));
-                        insertCommand.Parameters.AddWithValue("@batchNo", Convert.ToInt32(batchNo));
-                        insertCommand.Parameters.AddWithValue("@tN", Convert.ToInt32(tN));
-                        insertCommand.Parameters.AddWithValue("@adimNo", Convert.ToInt32(adimNo));
-                        insertCommand.Parameters.AddWithValue("@siloNo", Convert.ToInt32(siloNo));
-                        insertCommand.Parameters.AddWithValue("@receteID", receteID);
-                        insertCommand.Parameters.AddWithValue("@partiID", partiID);
-                        insertCommand.Parameters.AddWithValue("@hammaddeID", hammaddeID);
-                        insertCommand.Parameters.AddWithValue("@alinacak", alinacak);
-                        insertCommand.Parameters.AddWithValue("@alinan", alinan);
-                        insertCommand.Parameters.AddWithValue("@shut", shut);
+                         insertCommand.Parameters.AddWithValue("@kayitTarihi", DateTime.Now); // Þu anki tarih
+                         insertCommand.Parameters.AddWithValue("@counter", Convert.ToInt32(counter));
+                         insertCommand.Parameters.AddWithValue("@batchNo", Convert.ToInt32(batchNo));
+                         insertCommand.Parameters.AddWithValue("@tN", Convert.ToInt32(tN));
+                         insertCommand.Parameters.AddWithValue("@adimNo", Convert.ToInt32(adimNo));
+                         insertCommand.Parameters.AddWithValue("@siloNo", Convert.ToInt32(siloNo));
+                         insertCommand.Parameters.AddWithValue("@receteID", receteID);
+                         insertCommand.Parameters.AddWithValue("@partiID", partiID);
+                         insertCommand.Parameters.AddWithValue("@hammaddeID", hammaddeID);
+                         insertCommand.Parameters.AddWithValue("@alinacak", alinacak);
+                         insertCommand.Parameters.AddWithValue("@alinan", alinan);
+                         insertCommand.Parameters.AddWithValue("@shut", shut);
 
-                        // SQL komutunu çalýþtýr
-                        insertCommand.ExecuteNonQuery();
+                         // SQL komutunu çalýþtýr
+                         insertCommand.ExecuteNonQuery();
 
-                        _logger.LogInformation(DateTime.Now + " ==> Veriler SQL'e baþarýyla eklendi.");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"SQL'e kaydetme iþleminde hata oluþtu. Hata: {ex.Message}");
-                if (ex.InnerException != null)
-                {
-                    _logger.LogError($"Inner Exception: {ex.InnerException.Message}");
-                }
-            }
-        }*/
+                         _logger.LogInformation(DateTime.Now + " ==> Veriler SQL'e baþarýyla eklendi.");
+                     }
+                 }
+             }
+             catch (Exception ex)
+             {
+                 _logger.LogError($"SQL'e kaydetme iþleminde hata oluþtu. Hata: {ex.Message}");
+                 if (ex.InnerException != null)
+                 {
+                     _logger.LogError($"Inner Exception: {ex.InnerException.Message}");
+                 }
+             }
+         }*/
         private void SaveToSql()
         {
             try
@@ -290,12 +299,12 @@ namespace PlcConnectionService
                     plcData.AdimNo = Convert.ToInt32(adimNo);
                     plcData.SiloNo = Convert.ToInt32(siloNo);
 
-                    plcData.ReceteID = receteID;
-                    plcData.PartiID = partiID;
-                    plcData.HammaddeID = hammaddeID;
-                    plcData.Alinacak = alinacak;
-                    plcData.Alinan = alinan;
-                    plcData.Shut = shut;
+                    plcData.ReceteID = Convert.ToInt64((receteID1 << 16) | receteID);
+                    plcData.PartiID = Convert.ToInt64((partiID1 << 16) | partiID);
+                    plcData.HammaddeID = Convert.ToInt64((hammaddeID1 << 16) | hammaddeID);
+                    plcData.Alinacak = Convert.ToInt64((alinacak1 << 16) | alinacak);
+                    plcData.Alinan = Convert.ToInt64((alinan1 << 16) | alinan);
+                    plcData.Shut = Convert.ToInt64((shut1 << 16) | shut);
 
                     PlcDataManagement plcDataMan = new PlcDataManagement(dbContext);
 
