@@ -1,0 +1,46 @@
+2024-02-13 17:25:26.665 +03:00 [INF] 13.02.2024 17:25:26 ==> PLC ile bağlantı kuruldu.
+2024-02-13 17:25:26.747 +03:00 [INF] Entity Framework Core 6.0.0 initialized 'BaseDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer:6.0.0' with options: None
+2024-02-13 17:25:27.164 +03:00 [INF] 13.02.2024 17:25:27 ==> Veriler SQL'e başarıyla eklendi.
+2024-02-13 17:25:27.181 +03:00 [INF] Executed DbCommand (137ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32), @p4='?' (DbType = Int32), @p5='?' (DbType = Int32), @p6='?' (DbType = DateTime2), @p7='?' (DbType = Int32), @p8='?' (DbType = Int32), @p9='?' (DbType = Int32), @p10='?' (DbType = Int32), @p11='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SET NOCOUNT ON;
+INSERT INTO [PlcDatas] ([AdimNo], [Alinacak], [Alinan], [BatchNo], [Counter], [HammaddeID], [KayitTarihi], [PartiID], [ReceteID], [Shut], [SiloNo], [TN])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11);
+SELECT [Id]
+FROM [PlcDatas]
+WHERE @@ROWCOUNT = 1 AND [Id] = scope_identity();
+2024-02-13 17:25:29.296 +03:00 [INF] Entity Framework Core 6.0.0 initialized 'BaseDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer:6.0.0' with options: None
+2024-02-13 17:25:29.321 +03:00 [INF] 13.02.2024 17:25:29 ==> Veriler SQL'e başarıyla eklendi.
+2024-02-13 17:25:29.323 +03:00 [INF] Executed DbCommand (23ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32), @p4='?' (DbType = Int32), @p5='?' (DbType = Int32), @p6='?' (DbType = DateTime2), @p7='?' (DbType = Int32), @p8='?' (DbType = Int32), @p9='?' (DbType = Int32), @p10='?' (DbType = Int32), @p11='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SET NOCOUNT ON;
+INSERT INTO [PlcDatas] ([AdimNo], [Alinacak], [Alinan], [BatchNo], [Counter], [HammaddeID], [KayitTarihi], [PartiID], [ReceteID], [Shut], [SiloNo], [TN])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11);
+SELECT [Id]
+FROM [PlcDatas]
+WHERE @@ROWCOUNT = 1 AND [Id] = scope_identity();
+2024-02-13 17:25:31.412 +03:00 [INF] Entity Framework Core 6.0.0 initialized 'BaseDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer:6.0.0' with options: None
+2024-02-13 17:25:31.481 +03:00 [INF] 13.02.2024 17:25:31 ==> Veriler SQL'e başarıyla eklendi.
+2024-02-13 17:25:31.481 +03:00 [INF] Executed DbCommand (54ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32), @p4='?' (DbType = Int32), @p5='?' (DbType = Int32), @p6='?' (DbType = DateTime2), @p7='?' (DbType = Int32), @p8='?' (DbType = Int32), @p9='?' (DbType = Int32), @p10='?' (DbType = Int32), @p11='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SET NOCOUNT ON;
+INSERT INTO [PlcDatas] ([AdimNo], [Alinacak], [Alinan], [BatchNo], [Counter], [HammaddeID], [KayitTarihi], [PartiID], [ReceteID], [Shut], [SiloNo], [TN])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11);
+SELECT [Id]
+FROM [PlcDatas]
+WHERE @@ROWCOUNT = 1 AND [Id] = scope_identity();
+2024-02-13 17:25:33.536 +03:00 [INF] Entity Framework Core 6.0.0 initialized 'BaseDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer:6.0.0' with options: None
+2024-02-13 17:25:33.568 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32), @p4='?' (DbType = Int32), @p5='?' (DbType = Int32), @p6='?' (DbType = DateTime2), @p7='?' (DbType = Int32), @p8='?' (DbType = Int32), @p9='?' (DbType = Int32), @p10='?' (DbType = Int32), @p11='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SET NOCOUNT ON;
+INSERT INTO [PlcDatas] ([AdimNo], [Alinacak], [Alinan], [BatchNo], [Counter], [HammaddeID], [KayitTarihi], [PartiID], [ReceteID], [Shut], [SiloNo], [TN])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11);
+SELECT [Id]
+FROM [PlcDatas]
+WHERE @@ROWCOUNT = 1 AND [Id] = scope_identity();
+2024-02-13 17:25:33.586 +03:00 [INF] 13.02.2024 17:25:33 ==> Veriler SQL'e başarıyla eklendi.
+2024-02-13 17:25:35.636 +03:00 [INF] Entity Framework Core 6.0.0 initialized 'BaseDbContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer:6.0.0' with options: None
+2024-02-13 17:25:35.644 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32), @p4='?' (DbType = Int32), @p5='?' (DbType = Int32), @p6='?' (DbType = DateTime2), @p7='?' (DbType = Int32), @p8='?' (DbType = Int32), @p9='?' (DbType = Int32), @p10='?' (DbType = Int32), @p11='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SET NOCOUNT ON;
+INSERT INTO [PlcDatas] ([AdimNo], [Alinacak], [Alinan], [BatchNo], [Counter], [HammaddeID], [KayitTarihi], [PartiID], [ReceteID], [Shut], [SiloNo], [TN])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11);
+SELECT [Id]
+FROM [PlcDatas]
+WHERE @@ROWCOUNT = 1 AND [Id] = scope_identity();
+2024-02-13 17:25:35.688 +03:00 [INF] 13.02.2024 17:25:35 ==> Veriler SQL'e başarıyla eklendi.
